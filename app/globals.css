@@ -3,6 +3,82 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+
+  /* ===== Tela inicial (Totem) ===== */
+
+  /* Cores */
+  --start-bg: #ffe32a;
+  --start-button-bg: #e5003d;
+  --start-button-bg-active: #b80031;
+  --start-button-text: #ffffff;
+
+  /* Unidade base: o menor lado da viewport. Mantém a proporção em
+     qualquer aspect ratio, em vez de depender só de breakpoints. */
+  --u: min(1vw, 1dvh);
+
+  /* Fatores (portrait). Em landscape são sobrescritos abaixo.
+     Representam "quantos % da unidade base" o elemento ocupa. */
+  --start-logo-factor: 62;
+  --start-button-factor: 52;
+  --start-tomato-factor: 97;
+  --start-leaf-factor: 310;
+  /* Teto compartilhado das decorações em telas grandes */
+  --start-decor-max: 200rem;
+
+  /* Quanto de cada imagem sai da tela (proporção do próprio tamanho).
+     Quanto mais negativo, mais a imagem fica para fora. */
+  --start-tomato-offset: -0.289;
+  --start-leaf-offset: -0.1099;
+
+  /* Dimensões */
+  --start-logo-width: clamp(
+    12rem,
+    calc(var(--u) * var(--start-logo-factor)),
+    38rem
+  );
+  --start-button-width: clamp(
+    14rem,
+    calc(var(--u) * var(--start-button-factor)),
+    30rem
+  );
+  --start-button-height: clamp(4rem, calc(var(--u) * 9), 6.5rem);
+  --start-gap: clamp(1rem, calc(var(--u) * 4), 3rem);
+  --start-tomato-size: clamp(
+    9rem,
+    calc(var(--u) * var(--start-tomato-factor)),
+    var(--start-decor-max)
+  );
+  --start-leaf-size: clamp(
+    9rem,
+    calc(var(--u) * var(--start-leaf-factor)),
+    var(--start-decor-max)
+  );
+
+  /* Estilo do botão */
+  --start-button-radius: 0.875rem;
+  --start-button-shadow: 0 6px 16px rgb(0 0 0 / 20%);
+  --start-button-font-size: clamp(1.125rem, calc(var(--u) * 3), 2rem);
+
+  /* Animações */
+  --start-anim-duration: 600ms;
+}
+
+/* Landscape: a altura é o limite da unidade base. */
+@media (orientation: landscape) {
+  :root {
+    --start-logo-factor: 52;
+    --start-button-factor: 46;
+    --start-tomato-factor: 90;
+    --start-leaf-factor: 120;
+  }
+}
+
+/* Telas muito pequenas: reduz as decorações para preservar o centro. */
+@media (max-width: 22rem), (max-height: 26rem) {
+  :root {
+    --start-tomato-factor: 97;
+    --start-leaf-factor: 310;
+  }
 }
 
 @theme inline {
@@ -14,5 +90,157 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font);
+  font-family: var(--font-sans);
+}
+
+/* ===== Componentes da tela inicial ===== */
+@layer components {
+  .start-screen {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100dvh;
+    overflow: hidden;
+    background: var(--start-bg);
+  }
+
+  .start-content {
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--start-gap);
+    max-width: 100%;
+    padding: 1rem;
+  }
+
+  .start-logo {
+    width: var(--start-logo-width);
+    height: auto;
+    animation: start-pop var(--start-anim-duration)
+      cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+  }
+
+  .start-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--start-button-width);
+    min-height: var(--start-button-height);
+    padding: 0.75rem 1.25rem;
+    border-radius: var(--start-button-radius);
+    background: var(--start-button-bg);
+    color: var(--start-button-text);
+    font-family: var(--font-sans);
+    font-size: var(--start-button-font-size);
+    font-weight: 800;
+    line-height: 1.15;
+    text-align: center;
+    box-shadow: var(--start-button-shadow);
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    transition:
+      transform 150ms ease,
+      background-color 150ms ease,
+      box-shadow 150ms ease;
+    animation:
+      start-rise var(--start-anim-duration) 250ms ease-out both,
+      start-pulse 1s ease-in-out 1s infinite alternate;
+  }
+
+  .start-button:hover {
+    background: var(--start-button-bg-active);
+  }
+
+  .start-button:active {
+    transform: scale(0.96);
+    background: var(--start-button-bg-active);
+    box-shadow: 0 2px 6px rgb(0 0 0 / 25%);
+  }
+
+  .start-button:focus-visible {
+    outline: 0.25rem solid var(--start-button-text);
+    outline-offset: 0.25rem;
+    box-shadow:
+      0 0 0 0.5rem var(--start-button-bg),
+      var(--start-button-shadow);
+  }
+
+  .start-decor {
+    position: absolute;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* Parte da ilustração ultrapassa a viewport (efeito de continuidade). */
+  .start-decor--top-right {
+    width: var(--start-tomato-size);
+    height: var(--start-tomato-size);
+    top: calc(var(--start-tomato-size) * var(--start-tomato-offset));
+    right: calc(var(--start-tomato-size) * var(--start-tomato-offset));
+  }
+
+  .start-decor--bottom-left {
+    width: var(--start-leaf-size);
+    height: var(--start-leaf-size);
+    bottom: calc(var(--start-leaf-size) * var(--start-leaf-offset));
+    left: calc(var(--start-leaf-size) * var(--start-leaf-offset));
+  }
+}
+
+@keyframes start-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes start-rise {
+  from {
+    opacity: 0;
+    transform: translateY(1.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Usa a propriedade "scale" (e não "transform") para não conflitar
+   com a animação start-rise nem com o :active do botão. */
+@keyframes start-pulse {
+  from {
+    scale: 1;
+  }
+  to {
+    scale: 1.05;
+  }
+}
+
+@keyframes start-float {
+  from {
+    transform: translateY(0) rotate(0deg);
+  }
+  to {
+    transform: translateY(0.5rem) rotate(2deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .start-logo,
+  .start-button,
+  .start-decor {
+    animation: none;
+  }
+
+  .start-button {
+    transition: none;
+  }
 }
