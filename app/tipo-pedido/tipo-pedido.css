@@ -1,0 +1,153 @@
+/* =====================================================================
+   Tela "Escolha o tipo de pedido"
+   Reaproveita do globals.css: --u, --start-* (cores, logo, gap, offsets),
+   as classes .start-screen / .start-content / .start-logo / .start-decor
+   e os keyframes start-pop, start-rise e start-float.
+   As variáveis abaixo ficam escopadas em .choice-screen.
+   ===================================================================== */
+
+.choice-screen {
+  /* Decorações (~25% menores que as da tela inicial) */
+  --choice-tomato-factor: 73;
+  --choice-leaf-factor: 230;
+
+  /* Cores */
+  --choice-card-bg: #ffffff;
+  --choice-card-text: #111111;
+  --choice-title-color: #ffffff;
+  --choice-title-stroke-color: #000000;
+
+  /* Dimensões */
+  --choice-title-size: clamp(1.75rem, calc(var(--u) * 7), 4.5rem);
+  --choice-title-stroke: clamp(0.25rem, calc(var(--u) * 1), 0.75rem);
+  --choice-card-width: clamp(9rem, calc(var(--u) * 30), 22rem);
+  --choice-card-gap: clamp(0.75rem, calc(var(--u) * 4), 2.5rem);
+  --choice-card-padding: clamp(0.75rem, calc(var(--u) * 2.5), 1.75rem);
+  --choice-card-title-size: clamp(0.9rem, calc(var(--u) * 2.4), 1.6rem);
+  --choice-card-image-width: 72%;
+
+  /* Estilo */
+  --choice-card-radius: 1.25rem;
+  --choice-card-shadow: 0 10px 24px rgb(0 0 0 / 20%);
+
+  /* Tamanho das decorações só nesta tela. Precisa ser recalculado aqui,
+     pois o valor do :root já foi resolvido com o fator da tela inicial. */
+  --start-tomato-size: clamp(
+    9rem,
+    calc(var(--u) * var(--choice-tomato-factor)),
+    var(--start-decor-max)
+  );
+  --start-leaf-size: clamp(
+    9rem,
+    calc(var(--u) * var(--choice-leaf-factor)),
+    var(--start-decor-max)
+  );
+}
+
+/* Landscape: a altura é o limite da unidade base. */
+@media (orientation: landscape) {
+  .choice-screen {
+    --choice-tomato-factor: 68;
+    --choice-leaf-factor: 90;
+  }
+}
+
+/* Telas muito pequenas */
+@media (max-width: 22rem), (max-height: 26rem) {
+  .choice-screen {
+    --choice-tomato-factor: 73;
+    --choice-leaf-factor: 230;
+  }
+}
+
+.choice-title {
+  color: var(--choice-title-color);
+  font-size: var(--choice-title-size);
+  font-weight: 800;
+  line-height: 1;
+  -webkit-text-stroke: var(--choice-title-stroke)
+    var(--choice-title-stroke-color);
+  paint-order: stroke fill;
+  animation: start-pop var(--start-anim-duration) 150ms
+    cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+}
+
+.choice-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--choice-card-gap);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.choice-list > li {
+  display: flex;
+}
+
+.choice-list > li:nth-child(1) .choice-card {
+  animation-delay: 300ms;
+}
+
+.choice-list > li:nth-child(2) .choice-card {
+  animation-delay: 450ms;
+}
+
+.choice-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(var(--choice-card-padding) * 0.75);
+  flex: 1;
+  width: var(--choice-card-width);
+  padding: var(--choice-card-padding);
+  border-radius: var(--choice-card-radius);
+  background: var(--choice-card-bg);
+  color: var(--choice-card-text);
+  box-shadow: var(--choice-card-shadow);
+  text-align: center;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    transform 150ms ease,
+    box-shadow 150ms ease;
+  animation: start-rise var(--start-anim-duration) ease-out both;
+}
+
+.choice-card:hover {
+  transform: translateY(-0.25rem);
+}
+
+.choice-card:active {
+  transform: scale(0.9);
+  box-shadow: 0 3px 8px rgb(0 0 0 / 25%);
+}
+
+.choice-card:focus-visible {
+  outline: 0.25rem solid var(--start-button-bg);
+  outline-offset: 0.25rem;
+}
+
+.choice-card__title {
+  font-size: var(--choice-card-title-size);
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+.choice-card__image {
+  width: var(--choice-card-image-width);
+  aspect-ratio: 1;
+  height: auto;
+  object-fit: contain;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .choice-title,
+  .choice-card {
+    animation: none;
+    transition: none;
+  }
+}
